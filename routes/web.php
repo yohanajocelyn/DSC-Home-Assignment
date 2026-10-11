@@ -23,6 +23,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/meeting-rooms', [MeetingRoomController::class, 'index'])->name('meeting-rooms.index');
         Route::get('/meeting-rooms/create', [MeetingRoomController::class, 'create'])->name('meeting-rooms.create');
         Route::post('/meeting-rooms', [MeetingRoomController::class, 'store'])->name('meeting-rooms.store');
+        Route::get('/meeting-rooms/{meetingRoom}/edit', [MeetingRoomController::class, 'edit'])->name('meeting-rooms.edit');
+        Route::put('/meeting-rooms/{meetingRoom}', [MeetingRoomController::class, 'update'])->name('meeting-rooms.update');
     });
 
     // Staff Area (protected by role:Staff)

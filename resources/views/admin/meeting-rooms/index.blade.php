@@ -87,18 +87,12 @@
         @empty
             <!-- Placeholder for when there are no meeting rooms yet -->
             <div class="py-16 px-4 text-center">
-                <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-primary-100/70 border border-primary-200/60 flex items-center justify-center text-primary-400 shadow-2xs">
+                <div class="w-16 h-16 mx-auto mb-2 rounded-2xl flex items-center justify-center text-primary-400">
                     <x-heroicon-o-building-office-2 class="w-8 h-8 text-secondary" />
                 </div>
-                <h3 class="text-lg font-bold text-primary-900 mb-1">No meeting rooms yet</h3>
-                <p class="text-sm text-primary-600 max-w-sm mx-auto mb-6 leading-relaxed">
-                    There are currently no meeting rooms registered. Click below to add your first meeting room.
+                <p class="text-lg text-primary-600 max-w-md mx-auto mb-6 leading-relaxed">
+                    There are currently no meeting rooms registered.
                 </p>
-                <a href="{{ route('admin.meeting-rooms.create') }}"
-                   class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-bold rounded-xl shadow-md hover:bg-secondary hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5">
-                    <x-heroicon-o-plus class="w-4 h-4 stroke-[2.5]" />
-                    <span>Create a New Meeting Room</span>
-                </a>
             </div>
         @endforelse
     </div>

@@ -46,4 +46,32 @@ class MeetingRoomController extends Controller
             ->route('admin.meeting-rooms.index')
             ->with('success', 'Meeting room created successfully!');
     }
+
+    /**
+     * Show the form for editing the specified meeting room.
+     */
+    public function edit(MeetingRoom $meetingRoom): View
+    {
+        return view('admin.meeting-rooms.edit', compact('meetingRoom'));
+    }
+
+    /**
+     * Update the specified meeting room in storage.
+     */
+    public function update(Request $request, MeetingRoom $meetingRoom): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'location' => ['required', 'string', 'max:255'],
+            'capacity' => ['required', 'integer', 'min:1'],
+            'description' => ['required', 'string'],
+            'is_active' => ['required', 'boolean'],
+        ]);
+
+        $meetingRoom->update($validated);
+
+        return redirect()
+            ->route('admin.meeting-rooms.index')
+            ->with('success', 'Meeting room updated successfully!');
+    }
 }
