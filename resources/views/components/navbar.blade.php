@@ -45,7 +45,7 @@
     }
 @endphp
 
-<aside {{ $attributes->merge(['class' => 'w-full md:w-60 lg:w-72 shrink-0 pl-6 sm:pl-10 md:pl-14 lg:pl-16 pr-6 md:pr-10 py-8 md:py-12 border-b md:border-b-0 md:border-r border-primary-900 flex flex-col justify-between']) }}>
+<aside {{ $attributes->merge(['class' => 'w-full md:w-60 lg:w-72 shrink-0 md:sticky md:top-0 md:h-screen md:overflow-y-auto pl-6 sm:pl-10 md:pl-14 lg:pl-16 pr-6 md:pr-10 py-8 md:py-12 border-b md:border-b-0 md:border-r border-primary-900 flex flex-col justify-between']) }}>
     <div>
         <!-- Menu Links -->
         <nav class="space-y-4 md:space-y-6">

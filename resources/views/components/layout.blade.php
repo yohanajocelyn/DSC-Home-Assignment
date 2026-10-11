@@ -23,7 +23,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased bg-primary-50 text-primary-900 selection:bg-primary-300 selection:text-primary-900">
-        <div class="min-h-screen flex flex-col relative overflow-hidden">
+        <div class="min-h-screen flex flex-col relative overflow-x-clip">
             <!-- Optional subtle background decoration -->
             <div class="absolute inset-0 z-0 pointer-events-none opacity-50 bg-[radial-gradient(ellipse_at_top,_var(--color-primary-200),_transparent_70%)]"></div>
             

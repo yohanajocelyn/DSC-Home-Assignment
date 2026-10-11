@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BookingController;
 use App\Http\Controllers\MeetingRoomController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -17,7 +18,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // Admin Area (protected by role:Admin)
+    // Admin
     Route::middleware('role:Admin')->prefix('admin')->name('admin.')->group(function () {
         Route::get('/dashboard', [MeetingRoomController::class, 'index'])->name('dashboard');
         Route::get('/meeting-rooms', [MeetingRoomController::class, 'index'])->name('meeting-rooms.index');
@@ -25,9 +26,15 @@ Route::middleware('auth')->group(function () {
         Route::post('/meeting-rooms', [MeetingRoomController::class, 'store'])->name('meeting-rooms.store');
         Route::get('/meeting-rooms/{meetingRoom}/edit', [MeetingRoomController::class, 'edit'])->name('meeting-rooms.edit');
         Route::put('/meeting-rooms/{meetingRoom}', [MeetingRoomController::class, 'update'])->name('meeting-rooms.update');
+
+        // Bookings Management
+        Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
+        Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
+        Route::put('/bookings/{booking}', [BookingController::class, 'update'])->name('bookings.update');
+        Route::delete('/bookings/{booking}', [BookingController::class, 'destroy'])->name('bookings.destroy');
     });
 
-    // Staff Area (protected by role:Staff)
+    // Staff
     Route::middleware('role:Staff')->group(function () {
         Route::get('/dashboard', function () {
             return view('admin.dashboard'); // Temporary until staff dashboard is created

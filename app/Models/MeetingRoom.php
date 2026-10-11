@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class MeetingRoom extends Model
 {
@@ -30,5 +31,13 @@ class MeetingRoom extends Model
             'is_active' => 'boolean',
             'capacity' => 'integer',
         ];
+    }
+
+    /**
+     * Get the bookings for the meeting room.
+     */
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
     }
 }
