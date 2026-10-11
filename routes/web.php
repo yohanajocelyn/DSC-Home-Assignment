@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 // Guest Authentication Routes
@@ -32,4 +33,13 @@ Route::middleware('auth')->group(function () {
             return view('admin.dashboard'); // Temporary until staff dashboard is created
         })->name('staff.dashboard');
     });
+});
+
+// Fallback Route
+Route::fallback(function () {
+    if (! Auth::check()) {
+        return redirect('/');
+    }
+
+    abort(404);
 });

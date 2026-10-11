@@ -16,7 +16,7 @@ class CheckRole
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
         if (!$request->user()) {
-            return redirect('login');
+            return redirect('/');
         }
 
         foreach ($roles as $role) {
@@ -25,6 +25,16 @@ class CheckRole
             }
         }
 
-        abort(403, 'Unauthorized access.');
+        // If staff tries to access an unauthorized route (e.g. /admin/dashboard), redirect to their own dashboard
+        if ($request->user()->isStaff()) {
+            return redirect()->route('staff.dashboard');
+        }
+
+        // If admin tries to access a role-restricted route, redirect to admin dashboard
+        if ($request->user()->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        return redirect('/');
     }
 }
