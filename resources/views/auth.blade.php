@@ -9,14 +9,13 @@
                 <p class="text-sm sm:text-base text-primary-600 font-medium">Log in to your account</p>
             </div>
 
-            <!-- Note: No action attribute provided as requested for static design -->
-            <form>
+            <form method="POST" action="{{ route('login') }}">
                 @csrf
 
                 <!-- Email Address -->
                 <div class="mb-5 sm:mb-6">
                     <x-input-label for="email" value="Email Address" />
-                    <x-input id="email" class="block mt-1 w-full" type="email" name="email" required autofocus autocomplete="username" placeholder="you@example.com" />
+                    <x-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" placeholder="you@example.com" />
                     <x-input-error :messages="$errors->get('email')" class="mt-2" />
                 </div>
 
