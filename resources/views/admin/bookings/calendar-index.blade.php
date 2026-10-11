@@ -15,7 +15,7 @@
         </a>
     </div>
 @else
-    <!-- Controls Section: Room Select and Date Picker beside it -->
+    <!-- Controls Section: Room Select and Date Picker -->
     <div class="flex flex-col sm:flex-row sm:items-end gap-4 mb-6">
         <!-- Select: Meeting Room -->
         <div class="w-full sm:w-72">
@@ -26,11 +26,13 @@
                 <select id="roomSelect"
                         class="w-full pl-3.5 pr-10 py-2.5 rounded-xl border border-primary-300/80 bg-white text-sm font-semibold text-primary-900 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary shadow-2xs cursor-pointer appearance-none">
                     @foreach ($meetingRooms as $room)
-                        <option value="{{ $room->id }}"
-                                data-name="{{ $room->name }}"
-                                {{ (string)$selectedRoomId === (string)$room->id ? 'selected' : '' }}>
-                            {{ $room->name }}
-                        </option>
+                        @if ($room->is_active)
+                            <option value="{{ $room->id }}"
+                                    data-name="{{ $room->name }}"
+                                    {{ (string)$selectedRoomId === (string)$room->id ? 'selected' : '' }}>
+                                {{ $room->name }}
+                            </option>
+                        @endif
                     @endforeach
                 </select>
                 <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3 text-primary-500">
