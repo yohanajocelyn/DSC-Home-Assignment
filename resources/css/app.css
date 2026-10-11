@@ -22,6 +22,16 @@
     --color-tertiary: #D2B48C;
 }
 
+/* Enable native Cross-Document View Transitions */
+@view-transition {
+    navigation: auto;
+}
+
+/* Keep the sidebar/navbar persistent and smooth across page transitions */
+aside {
+    view-transition-name: main-navbar;
+}
+
 body {
     @apply text-primary-900 bg-primary-50;
 }

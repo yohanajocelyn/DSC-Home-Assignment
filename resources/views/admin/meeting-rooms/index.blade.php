@@ -1,4 +1,14 @@
 <div class="max-w-6xl">
+    <!-- Flash Success Notification -->
+    @if (session('success'))
+        <div class="mb-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center justify-between shadow-2xs">
+            <div class="flex items-center gap-3">
+                <x-heroicon-o-check-circle class="w-5 h-5 text-emerald-600 shrink-0" />
+                <span class="font-semibold">{{ session('success') }}</span>
+            </div>
+        </div>
+    @endif
+
     <!-- Title: Meeting Rooms -->
     <h1 class="text-2xl sm:text-3xl font-black text-primary-900 tracking-tight mb-6">
         Meeting Rooms
@@ -7,7 +17,7 @@
     <!-- Action & Search Bar Row (Justify Alignment: Button on Left, Search on Right) -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
         <!-- Create Button Under Title -->
-        <a href="{{ \Route::has('admin.meeting-rooms.create') ? route('admin.meeting-rooms.create') : '#' }}"
+        <a href="{{ route('admin.meeting-rooms.create') }}"
            class="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-bold rounded-xl shadow-md hover:bg-secondary hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 shrink-0">
             <x-heroicon-o-plus class="w-4 h-4 stroke-[2.5]" />
             <span>Create a New Meeting Room</span>
@@ -25,42 +35,9 @@
         </div>
     </div>
 
-    <!-- Meeting Rooms List Data -->
+    <!-- Meeting Rooms Real Data (Dummy Data Removed) -->
     @php
-        $rooms = $meetingRooms ?? \App\Models\MeetingRoom::all();
-        if ($rooms->isEmpty()) {
-            // Demo fallback rooms for visual preview
-            $rooms = collect([
-                (object)[
-                    'id' => 1,
-                    'name' => 'Boardroom Olympus',
-                    'location' => 'Main Tower, 12th Floor, Suite 1201 (Executive Wing)',
-                    'capacity' => 20,
-                    'is_active' => true,
-                ],
-                (object)[
-                    'id' => 2,
-                    'name' => 'Innovation Hub',
-                    'location' => 'Creative Wing, 3rd Floor, Room 304 near Central Cafeteria',
-                    'capacity' => 12,
-                    'is_active' => true,
-                ],
-                (object)[
-                    'id' => 3,
-                    'name' => 'Focus Room Alpha',
-                    'location' => 'East Wing, 2nd Floor, Room 210',
-                    'capacity' => 4,
-                    'is_active' => false,
-                ],
-                (object)[
-                    'id' => 4,
-                    'name' => 'Conference Hall A',
-                    'location' => 'Ground Floor, Convention Center, West Hallway',
-                    'capacity' => 50,
-                    'is_active' => true,
-                ],
-            ]);
-        }
+        $rooms = $meetingRooms ?? \App\Models\MeetingRoom::latest()->get();
     @endphp
 
     <!-- List of Meeting Rooms (No white container, base background) -->
@@ -108,8 +85,20 @@
                 </div>
             </div>
         @empty
-            <div class="py-12 text-center text-primary-500">
-                <p class="font-medium text-sm">No meeting rooms found.</p>
+            <!-- Placeholder for when there are no meeting rooms yet -->
+            <div class="py-16 px-4 text-center">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-primary-100/70 border border-primary-200/60 flex items-center justify-center text-primary-400 shadow-2xs">
+                    <x-heroicon-o-building-office-2 class="w-8 h-8 text-secondary" />
+                </div>
+                <h3 class="text-lg font-bold text-primary-900 mb-1">No meeting rooms yet</h3>
+                <p class="text-sm text-primary-600 max-w-sm mx-auto mb-6 leading-relaxed">
+                    There are currently no meeting rooms registered. Click below to add your first meeting room.
+                </p>
+                <a href="{{ route('admin.meeting-rooms.create') }}"
+                   class="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-white text-sm font-bold rounded-xl shadow-md hover:bg-secondary hover:shadow-lg transition-all duration-200 transform hover:-translate-y-0.5">
+                    <x-heroicon-o-plus class="w-4 h-4 stroke-[2.5]" />
+                    <span>Create a New Meeting Room</span>
+                </a>
             </div>
         @endforelse
     </div>

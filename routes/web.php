@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MeetingRoomController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -18,13 +19,10 @@ Route::middleware('auth')->group(function () {
 
     // Admin Area (protected by role:Admin)
     Route::middleware('role:Admin')->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', function () {
-            return view('admin.dashboard');
-        })->name('dashboard');
-
-        Route::get('/meeting-rooms', function () {
-            return view('admin.dashboard');
-        })->name('meeting-rooms.index');
+        Route::get('/dashboard', [MeetingRoomController::class, 'index'])->name('dashboard');
+        Route::get('/meeting-rooms', [MeetingRoomController::class, 'index'])->name('meeting-rooms.index');
+        Route::get('/meeting-rooms/create', [MeetingRoomController::class, 'create'])->name('meeting-rooms.create');
+        Route::post('/meeting-rooms', [MeetingRoomController::class, 'store'])->name('meeting-rooms.store');
     });
 
     // Staff Area (protected by role:Staff)
