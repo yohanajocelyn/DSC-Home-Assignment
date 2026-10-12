@@ -34,14 +34,14 @@
                     </div>
                 @endif
 
-                <!-- Header -->
+                <!-- Header Row: Bookings Title and 2-Icon View Switcher -->
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                    <!-- Title: Bookings -->
+                    <!-- Title: Bookings (Positioned with exact same margin/padding as Meeting Rooms title) -->
                     <h1 class="text-2xl sm:text-3xl font-black text-primary-900 tracking-tight">
                         Bookings
                     </h1>
 
-                    <!-- Switch between Calendar Index and List Index -->
+                    <!-- 2 Icon Buttons Side by Side (Switch between Calendar Index and List Index) -->
                     <div class="inline-flex items-center p-1 bg-primary-100/70 border border-primary-200/80 rounded-2xl shadow-2xs shrink-0 self-start sm:self-auto" role="group" aria-label="View toggle">
                         <button type="button"
                                 id="viewCalendarBtn"
@@ -83,8 +83,9 @@
     <!-- Shared Interactive JavaScript (View Toggle, Filters, Navigation, and Modals) -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-
-            // VIEW SWITCHER (CALENDAR <-> LIST)
+            // ==========================================
+            // 1. VIEW SWITCHER (CALENDAR <-> LIST)
+            // ==========================================
             const viewCalendarBtn = document.getElementById('viewCalendarBtn');
             const viewListBtn = document.getElementById('viewListBtn');
             const calendarViewContainer = document.getElementById('calendarViewContainer');
@@ -129,7 +130,9 @@
                 });
             }
 
-            // CALENDAR ROOM & DATE NAVIGATION
+            // ==========================================
+            // 2. CALENDAR ROOM & DATE NAVIGATION
+            // ==========================================
             const roomSelect = document.getElementById('roomSelect');
             const datePicker = document.getElementById('datePicker');
 
@@ -153,7 +156,9 @@
                 });
             }
 
-            // LIST VIEW SEARCH AND FILTERS
+            // ==========================================
+            // 3. LIST VIEW SEARCH & DUAL FILTERS
+            // ==========================================
             const bookingSearchInput = document.getElementById('bookingSearchInput');
             const bookingFilterRoom = document.getElementById('bookingFilterRoom');
             const bookingFilterUser = document.getElementById('bookingFilterUser');
@@ -203,7 +208,9 @@
                 bookingFilterUser.addEventListener('change', filterListBookings);
             }
 
-            // SHARED MODAL: DETAILS MODAL
+            // ==========================================
+            // 4. SHARED MODAL: DETAILS MODAL
+            // ==========================================
             const detailsModal = document.getElementById('detailsModal');
             const closeDetailsModalBtn = document.getElementById('closeDetailsModalBtn');
             const dismissDetailsBtn = document.getElementById('dismissDetailsBtn');
@@ -261,9 +268,9 @@
 
             // List Rows / Details Buttons -> Open Details Modal
             listRows.forEach(function (row) {
-                // Opens details modal
+                // Clicking anywhere on row (except when clicking Edit or Cancel button) opens details modal
                 row.addEventListener('click', function (e) {
-                    if (e.target.closest('.row-edit-btn')) return;
+                    if (e.target.closest('.row-edit-btn') || e.target.closest('.open-cancel-modal-btn')) return;
 
                     const data = {
                         id: this.dataset.bookingId,
@@ -282,7 +289,9 @@
                 });
             });
 
-            // SHARED MODAL: CREATE BOOKING MODAL
+            // ==========================================
+            // 5. SHARED MODAL: CREATE BOOKING MODAL
+            // ==========================================
             const createModal = document.getElementById('createBookingModal');
             const closeCreateModalBtn = document.getElementById('closeCreateModalBtn');
             const cancelCreateModalBtn = document.getElementById('cancelCreateModalBtn');
@@ -318,7 +327,9 @@
             if (closeCreateModalBtn) closeCreateModalBtn.addEventListener('click', closeCreateModal);
             if (cancelCreateModalBtn) cancelCreateModalBtn.addEventListener('click', closeCreateModal);
 
-            // SHARED MODAL: EDIT BOOKING MODAL
+            // ==========================================
+            // 6. SHARED MODAL: EDIT BOOKING MODAL
+            // ==========================================
             const editModal = document.getElementById('editBookingModal');
             const closeEditModalBtn = document.getElementById('closeEditModalBtn');
             const cancelEditModalBtn = document.getElementById('cancelEditModalBtn');
@@ -384,11 +395,48 @@
             if (closeEditModalBtn) closeEditModalBtn.addEventListener('click', closeEditModal);
             if (cancelEditModalBtn) cancelEditModalBtn.addEventListener('click', closeEditModal);
 
+            // CANCEL BOOKING MODAL
+            const cancelModal = document.getElementById('cancelBookingModal');
+            const cancelForm = document.getElementById('cancelBookingModal_form');
+            const cancelMessage = document.getElementById('cancelBookingModal_message');
+
+            function openCancelModal(actionUrl, bookingTitle) {
+                if (cancelForm && actionUrl) {
+                    cancelForm.action = actionUrl;
+                }
+                if (cancelMessage) {
+                    cancelMessage.textContent = bookingTitle
+                        ? `Are you sure you want to cancel the booking "${bookingTitle}"? This reservation will be removed from the schedule.`
+                        : 'Are you sure you want to cancel this booking? This reservation will be removed from the schedule.';
+                }
+                if (cancelModal) cancelModal.classList.remove('hidden');
+            }
+
+            function closeCancelModal() {
+                if (cancelModal) cancelModal.classList.add('hidden');
+            }
+
+            document.querySelectorAll('.open-cancel-modal-btn').forEach(function (btn) {
+                btn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    const actionUrl = this.dataset.action;
+                    const bookingTitle = this.dataset.bookingTitle;
+                    openCancelModal(actionUrl, bookingTitle);
+                });
+            });
+
+            if (cancelModal) {
+                cancelModal.querySelectorAll('.modal-close-trigger, .modal-cancel-trigger').forEach(function (btn) {
+                    btn.addEventListener('click', closeCancelModal);
+                });
+            }
+
             // BACKDROP & KEYBOARD CLOSING
             window.addEventListener('click', function (e) {
                 if (e.target === detailsModal) closeDetailsModal();
                 if (e.target === createModal) closeCreateModal();
                 if (e.target === editModal) closeEditModal();
+                if (e.target === cancelModal) closeCancelModal();
             });
 
             window.addEventListener('keydown', function (e) {
@@ -396,6 +444,7 @@
                     closeDetailsModal();
                     closeCreateModal();
                     closeEditModal();
+                    closeCancelModal();
                 }
             });
         });

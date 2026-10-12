@@ -4,9 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Booking extends Model
 {
+    use SoftDeletes;
+
     /**
      * The attributes that are mass assignable.
      *
@@ -19,7 +22,6 @@ class Booking extends Model
         'date',
         'start_time',
         'end_time',
-        'is_active',
     ];
 
     /**
@@ -31,7 +33,6 @@ class Booking extends Model
     {
         return [
             'date' => 'date',
-            'is_active' => 'boolean',
         ];
     }
 

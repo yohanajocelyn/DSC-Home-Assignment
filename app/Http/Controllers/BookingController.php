@@ -50,7 +50,6 @@ class BookingController extends Controller
 
         // All active bookings for the list view
         $allBookings = Booking::with(['user', 'meetingRoom'])
-            ->where('is_active', true)
             ->orderBy('date', 'desc')
             ->orderBy('start_time', 'asc')
             ->get();
@@ -102,7 +101,6 @@ class BookingController extends Controller
         // Prevent overlapping bookings on the same room and date
         $overlap = Booking::where('meeting_room_id', $validated['meeting_room_id'])
             ->where('date', $validated['date'])
-            ->where('is_active', true)
             ->where(function ($q) use ($validated) {
                 $q->where('start_time', '<', $validated['end_time'])
                     ->where('end_time', '>', $validated['start_time']);
@@ -122,7 +120,6 @@ class BookingController extends Controller
             'date' => $validated['date'],
             'start_time' => $validated['start_time'],
             'end_time' => $validated['end_time'],
-            'is_active' => true,
         ]);
 
         return redirect()->route('admin.bookings.index', [
@@ -146,7 +143,6 @@ class BookingController extends Controller
 
         $overlap = Booking::where('meeting_room_id', $validated['meeting_room_id'])
             ->where('date', $validated['date'])
-            ->where('is_active', true)
             ->where('id', '!=', $booking->id)
             ->where(function ($q) use ($validated) {
                 $q->where('start_time', '<', $validated['end_time'])
@@ -181,6 +177,6 @@ class BookingController extends Controller
     {
         $booking->delete();
 
-        return back()->with('success', 'Booking removed successfully!');
+        return back()->with('success', 'Booking cancelled successfully!');
     }
 }

@@ -222,7 +222,7 @@
                             class="w-full mt-1.5 px-3.5 py-2.5 rounded-xl border border-primary-300 bg-white text-primary-900 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-secondary cursor-pointer">
                         @foreach ($meetingRooms as $room)
                             <option value="{{ $room->id }}">
-                                {{ $room->name }}
+                                {{ $room->name }} {{ $room->location ? '('.$room->location.')' : '' }}
                             </option>
                         @endforeach
                     </select>
@@ -297,3 +297,14 @@
         </form>
     </div>
 </div>
+
+<!-- MODAL 4: Generic Confirmation Modal for Cancelling Bookings -->
+<x-confirm-modal
+    id="cancelBookingModal"
+    title="Cancel Booking"
+    message="Are you sure you want to cancel this booking? This will remove the reservation from the schedule."
+    confirm-text="Yes, Cancel"
+    cancel-text="Keep Booking"
+    variant="danger"
+    method="DELETE"
+/>

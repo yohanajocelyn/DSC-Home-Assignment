@@ -99,8 +99,8 @@
                 </div>
             </div>
 
-            <!-- Right: Action Buttons (Reusing shared modals, styled matching meeting-rooms/index) -->
-            <div class="flex items-center justify-end gap-2 shrink-0">
+            <!-- Right: Action Buttons (Details, Edit, Cancel) -->
+            <div class="flex items-center justify-end gap-1.5 sm:gap-2 shrink-0">
                 <!-- Details Button (Opens shared details modal) -->
                 <button type="button"
                         class="row-details-btn inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-primary-900 bg-white hover:bg-primary-100 border border-primary-200 rounded-lg shadow-2xs hover:shadow-xs transition-all duration-200 cursor-pointer">
@@ -113,6 +113,17 @@
                         class="row-edit-btn inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-primary-900 bg-white hover:bg-primary-100 border border-primary-200 rounded-lg shadow-2xs hover:shadow-xs transition-all duration-200 cursor-pointer">
                     <x-heroicon-o-pencil-square class="w-3.5 h-3.5 text-secondary" />
                     <span>Edit</span>
+                </button>
+
+                <!-- Cancel Button (Opens generic confirmation modal) -->
+                <button type="button"
+                        class="open-cancel-modal-btn inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-rose-700 bg-white hover:bg-rose-50 border border-rose-200 rounded-lg shadow-2xs hover:shadow-xs transition-all duration-200 cursor-pointer"
+                        title="Cancel this booking"
+                        data-booking-id="{{ $booking->id }}"
+                        data-booking-title="{{ $booking->title }}"
+                        data-action="{{ route('admin.bookings.destroy', $booking->id) }}">
+                    <x-heroicon-o-x-circle class="w-3.5 h-3.5 text-rose-600" />
+                    <span>Cancel</span>
                 </button>
             </div>
         </div>
