@@ -99,14 +99,46 @@
             </div>
 
             @auth
-                <!-- Logout action button -->
-                <form method="POST" action="{{ route('logout') }}" class="shrink-0" title="Log Out">
-                    @csrf
-                    <button type="submit" class="p-1.5 text-primary-500 hover:text-primary-900 hover:bg-primary-100 rounded-lg transition-colors cursor-pointer" title="Log Out">
-                        <x-heroicon-o-arrow-left-on-rectangle class="w-4 h-4" />
-                    </button>
-                </form>
+                <!-- Logout trigger button -->
+                <button type="button"
+                        id="navbarLogoutBtn"
+                        onclick="window.openLogoutModal()"
+                        class="p-1.5 text-primary-500 hover:text-primary-900 hover:bg-primary-100 rounded-lg transition-colors cursor-pointer shrink-0"
+                        title="Log Out"
+                        aria-label="Log Out">
+                    <x-heroicon-o-arrow-left-on-rectangle class="w-4 h-4" />
+                </button>
             @endauth
         </div>
     </div>
 </aside>
+
+@auth
+    <!-- Logout Confirmation Modal Component -->
+    <x-confirm-modal
+        id="logoutConfirmModal"
+        title="Log Out"
+        message="Are you sure you want to log out of your account?"
+        confirm-text="Log Out"
+        cancel-text="Cancel"
+        variant="danger"
+        method="POST"
+        :action="route('logout')"
+    />
+
+    <script>
+        window.openLogoutModal = function () {
+            const modal = document.getElementById('logoutConfirmModal');
+            if (modal) {
+                modal.classList.remove('hidden');
+            }
+        };
+
+        window.closeLogoutModal = function () {
+            const modal = document.getElementById('logoutConfirmModal');
+            if (modal) {
+                modal.classList.add('hidden');
+            }
+        };
+    </script>
+@endauth

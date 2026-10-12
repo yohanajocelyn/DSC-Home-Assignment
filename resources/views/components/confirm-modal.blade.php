@@ -26,7 +26,8 @@
      role="dialog"
      aria-modal="true"
      aria-labelledby="{{ $id }}_title"
-     aria-describedby="{{ $id }}_message">
+     aria-describedby="{{ $id }}_message"
+     onclick="if (event.target === this) this.classList.add('hidden');">
     <div class="bg-white rounded-3xl shadow-2xl border border-primary-200 max-w-md w-full overflow-hidden transform transition-all duration-200">
         <!-- Modal Header -->
         <div class="p-6 pb-4 border-b border-primary-200/60 flex items-center justify-between">
@@ -51,7 +52,8 @@
             </div>
             <button type="button"
                     class="modal-close-trigger p-1.5 rounded-lg text-primary-400 hover:text-primary-800 hover:bg-primary-100/60 transition-colors cursor-pointer"
-                    aria-label="Close modal">
+                    aria-label="Close modal"
+                    onclick="const m = this.closest('.confirm-modal'); if (m) m.classList.add('hidden');">
                 <x-heroicon-o-x-mark class="w-5 h-5" />
             </button>
         </div>
@@ -74,7 +76,8 @@
             <!-- Modal Footer -->
             <div class="p-4 sm:p-5 border-t border-primary-200/60 bg-primary-50/30 flex items-center justify-end gap-3">
                 <button type="button"
-                        class="modal-cancel-trigger px-5 py-2.5 text-xs sm:text-sm font-semibold text-primary-700 bg-white hover:bg-primary-100/80 border border-primary-300 rounded-xl shadow-2xs transition-all cursor-pointer">
+                        class="modal-cancel-trigger px-5 py-2.5 text-xs sm:text-sm font-semibold text-primary-700 bg-white hover:bg-primary-100/80 border border-primary-300 rounded-xl shadow-2xs transition-all cursor-pointer"
+                        onclick="const m = this.closest('.confirm-modal'); if (m) m.classList.add('hidden');">
                     {{ $cancelText }}
                 </button>
                 <button type="submit"
@@ -86,3 +89,15 @@
         </form>
     </div>
 </div>
+
+@once
+<script>
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.confirm-modal:not(.hidden)').forEach(function (modal) {
+                modal.classList.add('hidden');
+            });
+        }
+    });
+</script>
+@endonce

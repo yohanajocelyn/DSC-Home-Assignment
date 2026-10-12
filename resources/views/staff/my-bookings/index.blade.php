@@ -27,7 +27,7 @@
 
     <!-- Controls Row: Timing Tabs on Left, Search Bar on Right -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-        <!-- Tabs: Upcoming & Present vs Past -->
+        <!-- Tabs: Upcoming vs Past -->
         <div class="inline-flex items-center p-1 bg-primary-100/70 border border-primary-200/80 rounded-2xl shadow-2xs shrink-0 self-start sm:self-auto" role="tablist" aria-label="Bookings timing tabs">
             <button type="button"
                     id="tabUpcomingBtn"
@@ -35,7 +35,7 @@
                     data-timing="upcoming"
                     role="tab"
                     aria-selected="true">
-                <span>Upcoming & Present</span>
+                <span>Upcoming</span>
             </button>
 
             <button type="button"
