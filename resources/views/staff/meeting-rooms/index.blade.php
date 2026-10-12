@@ -11,22 +11,21 @@
                 <x-flash-success class="mb-6" />
                 <x-flash-error class="mb-6" />
 
-                <!-- Header Row: Title & Search Bar (Search Aligned Right) -->
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-                    <!-- Title: Meeting Rooms -->
-                    <h1 class="text-2xl sm:text-3xl font-black text-primary-900 tracking-tight">
-                        Meeting Rooms
-                    </h1>
+                <!-- Title: Meeting Rooms -->
+                <h1 class="text-2xl sm:text-3xl font-black text-primary-900 tracking-tight mb-6">
+                    Meeting Rooms
+                </h1>
 
-                    <!-- Search Input with Guaranteed Visible Magnifying Glass on the Right -->
-                    <div class="relative w-full sm:w-72 md:w-80 flex items-center">
+                <!-- Search Bar: Below heading, right-aligned -->
+                <div class="flex justify-end mb-6">
+                    <div class="relative w-full sm:w-72 md:w-80">
                         <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-primary-500 z-10">
                             <x-heroicon-o-magnifying-glass class="w-4 h-4 text-primary-500" />
                         </span>
                         <input type="text"
                                id="roomSearchInput"
                                placeholder="Search meeting room by name..."
-                               class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-primary-300/80 bg-white/70 backdrop-blur-xs text-primary-900 text-sm placeholder-primary-400 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary shadow-2xs transition-all" />
+                               class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-primary-300/80 bg-white/70 backdrop-blur-xs text-primary-900 text-sm placeholder:text-primary-400 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary shadow-2xs transition-all" />
                     </div>
                 </div>
 

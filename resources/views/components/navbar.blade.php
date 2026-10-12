@@ -1,5 +1,5 @@
 @props([
-    'active' => 'meeting-rooms',
+    'active' => null,
     'menus' => null,
 ])
 
@@ -8,6 +8,21 @@
     // Default role name and type
     $roleName = $user?->role?->name ?? 'Admin';
     $isAdmin = $user ? $user->isAdmin() : ($roleName === 'Admin');
+
+    // Automatically detect active menu from route/URL if not explicitly specified
+    if ($active === null) {
+        if (request()->routeIs('*.my-bookings.*') || request()->is('staff/my-bookings*') || request()->routeIs('staff.dashboard')) {
+            $active = 'my-bookings';
+        } elseif (request()->routeIs('*.meeting-rooms.*') || request()->is('*/meeting-rooms*')) {
+            $active = 'meeting-rooms';
+        } elseif (request()->routeIs('*.bookings.*') || request()->is('*/bookings*')) {
+            $active = 'bookings';
+        } elseif (request()->routeIs('*.users.*') || request()->is('*/users*')) {
+            $active = 'users';
+        } else {
+            $active = $isAdmin ? 'meeting-rooms' : 'my-bookings';
+        }
+    }
 
     if ($menus === null) {
         if ($isAdmin) {

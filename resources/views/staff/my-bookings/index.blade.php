@@ -5,7 +5,7 @@
 @if (!isset($isIncluded))
 <x-layout title="My Bookings - DSC Meeting Room Reservation">
     <div class="flex flex-col md:flex-row min-h-screen">
-        <x-navbar />
+        <x-navbar active="my-bookings" />
         <main class="flex-1 p-6 sm:p-8 md:p-10 lg:p-12 overflow-x-hidden">
 @endif
 
@@ -19,10 +19,10 @@
         My Bookings
     </h1>
 
-    <!-- Search Bar aligned full-width on mobile, neat on tablet/desktop -->
-    <div class="mb-6 max-w-md">
-        <div class="relative">
-            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+    <!-- Search Bar: Below heading, right-aligned -->
+    <div class="flex justify-end mb-6">
+        <div class="relative w-full sm:w-72 md:w-80">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-primary-500 z-10">
                 <x-heroicon-o-magnifying-glass class="w-4 h-4 text-primary-500" />
             </span>
             <input type="text"
