@@ -45,9 +45,11 @@
                             required
                             class="w-full mt-1.5 px-3.5 py-2.5 rounded-xl border border-primary-300 bg-white text-primary-900 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-secondary cursor-pointer">
                         @foreach ($meetingRooms as $room)
-                            <option value="{{ $room->id }}" {{ (string)$room->id === (string)($selectedRoomId ?? '') ? 'selected' : '' }}>
-                                {{ $room->name }} {{ $room->location ? '('.$room->location.')' : '' }}
-                            </option>
+                            @if ($room->is_active)
+                                <option value="{{ $room->id }}" {{ (string)$room->id === (string)($selectedRoomId ?? '') ? 'selected' : '' }}>
+                                    {{ $room->name }} {{ $room->location ? '('.$room->location.')' : '' }}
+                                </option>
+                            @endif
                         @endforeach
                     </select>
                     <x-input-error :messages="($errors ?? null)?->get('meeting_room_id')" class="mt-1" />
@@ -166,9 +168,11 @@
                             required
                             class="w-full mt-1.5 px-3.5 py-2.5 rounded-xl border border-primary-300 bg-white text-primary-900 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-secondary cursor-pointer">
                         @foreach ($meetingRooms as $room)
-                            <option value="{{ $room->id }}">
-                                {{ $room->name }} {{ $room->location ? '('.$room->location.')' : '' }}
-                            </option>
+                            @if ($room->is_active)
+                                <option value="{{ $room->id }}">
+                                    {{ $room->name }} {{ $room->location ? '('.$room->location.')' : '' }}
+                                </option>
+                            @endif
                         @endforeach
                     </select>
                     <x-input-error :messages="($errors ?? null)?->get('meeting_room_id')" class="mt-1" />
