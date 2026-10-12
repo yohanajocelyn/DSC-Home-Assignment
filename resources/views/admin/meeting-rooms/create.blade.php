@@ -68,17 +68,8 @@
                     </p>
                 </div>
 
-                <!-- Validation Errors Alert if any -->
-                @if ($errors->any())
-                    <div class="mb-6 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-sm">
-                        <p class="font-bold mb-1">Please correct the following errors:</p>
-                        <ul class="list-disc list-inside space-y-0.5 text-xs">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
+                <!-- Flash Notifications -->
+                <x-flash-error class="mb-6" title="Please correct the following errors:" />
 
                 <!-- Create Form -->
                 <form method="POST" action="{{ route('admin.meeting-rooms.store') }}" id="meetingRoomForm" class="space-y-6">

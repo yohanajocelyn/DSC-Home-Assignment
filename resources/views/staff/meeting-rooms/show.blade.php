@@ -103,32 +103,9 @@
                     </a>
                 </div>
 
-                <!-- Flash Success Notification -->
-                @if (session('success'))
-                    <div class="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center justify-between shadow-2xs">
-                        <div class="flex items-center gap-3">
-                            <x-heroicon-o-check-circle class="w-5 h-5 text-emerald-600 shrink-0" />
-                            <span class="font-semibold">{{ session('success') }}</span>
-                        </div>
-                    </div>
-                @endif
-
-                <!-- Flash Validation Errors Notification -->
-                @if (isset($errors) && $errors->any())
-                    <div class="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-sm shadow-2xs">
-                        <div class="flex items-start gap-3">
-                            <x-heroicon-o-exclamation-circle class="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
-                            <div>
-                                <p class="font-bold mb-1">Reservation could not be processed:</p>
-                                <ul class="list-disc list-inside space-y-0.5 text-xs">
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                @endif
+                <!-- Flash Notifications -->
+                <x-flash-success class="mb-6" />
+                <x-flash-error class="mb-6" title="Reservation could not be processed:" />
 
                 <!-- Room Details Card (Title, Location, Capacity, and Rich Description) -->
                 <div class="bg-white rounded-3xl border border-primary-200/80 shadow-2xs p-6 sm:p-8">

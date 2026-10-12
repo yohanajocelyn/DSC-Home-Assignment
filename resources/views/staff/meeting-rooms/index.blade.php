@@ -7,32 +7,9 @@
         <main class="flex-1 p-6 sm:p-8 md:p-10 lg:p-12 overflow-x-hidden">
             <div class="max-w-6xl">
 
-                <!-- Flash Success Notification -->
-                @if (session('success'))
-                    <div class="mb-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm flex items-center justify-between shadow-2xs">
-                        <div class="flex items-center gap-3">
-                            <x-heroicon-o-check-circle class="w-5 h-5 text-emerald-600 shrink-0" />
-                            <span class="font-semibold">{{ session('success') }}</span>
-                        </div>
-                    </div>
-                @endif
-
-                <!-- Flash Errors Notification -->
-                @if (isset($errors) && $errors->any())
-                    <div class="mb-6 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-sm shadow-2xs">
-                        <div class="flex items-start gap-3">
-                            <x-heroicon-o-exclamation-circle class="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
-                            <div>
-                                <p class="font-bold mb-1">Action could not be processed:</p>
-                                <ul class="list-disc list-inside space-y-0.5 text-xs">
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                @endif
+                <!-- Flash Notifications -->
+                <x-flash-success class="mb-6" />
+                <x-flash-error class="mb-6" />
 
                 <!-- Header Row: Title & Search Bar (Search Aligned Right) -->
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
