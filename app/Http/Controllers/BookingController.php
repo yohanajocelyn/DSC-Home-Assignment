@@ -151,6 +151,13 @@ class BookingController extends Controller
             'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
         ]);
 
+        $room = MeetingRoom::find($validated['meeting_room_id']);
+        if (! $room || ! $room->is_active) {
+            return back()
+                ->withErrors(['meeting_room_id' => 'Cannot book an inactive or unavailable meeting room.'])
+                ->withInput();
+        }
+
         $overlap = Booking::where('meeting_room_id', $validated['meeting_room_id'])
             ->where('date', $validated['date'])
             ->where('id', '!=', $booking->id)
@@ -174,10 +181,15 @@ class BookingController extends Controller
             'end_time' => $validated['end_time'],
         ]);
 
-        return redirect()->route('admin.bookings.index', [
-            'room_id' => $validated['meeting_room_id'],
-            'date' => $validated['date'],
-        ])->with('success', 'Booking updated successfully!');
+        if (Auth::user()?->isAdmin()) {
+            return redirect()->route('admin.bookings.index', [
+                'room_id' => $validated['meeting_room_id'],
+                'date' => $validated['date'],
+            ])->with('success', 'Booking updated successfully!');
+        }
+
+        return redirect()->route('staff.my-bookings.index')
+            ->with('success', 'Booking updated successfully!');
     }
 
     /**
@@ -207,8 +219,9 @@ class BookingController extends Controller
         }
 
         $bookings = $query->get();
+        $meetingRooms = MeetingRoom::where('is_active', true)->orderBy('name')->get();
 
-        return view('staff.my-bookings.index', compact('bookings'));
+        return view('staff.my-bookings.index', compact('bookings', 'meetingRooms'));
     }
 
     /**

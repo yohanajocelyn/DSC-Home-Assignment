@@ -24,11 +24,11 @@
                 </div>
                 <div>
                     <h3 class="text-lg font-black text-primary-900 tracking-tight">Booking Details</h3>
-                    <p class="text-xs text-primary-600 font-medium">Reservation Information</p>
                 </div>
             </div>
             <button type="button"
                     id="{{ $id === 'detailsModal' ? 'closeDetailsModalBtn' : ($id === 'staffDetailsModal' ? 'closeStaffDetailsModalBtn' : $prefix . 'CloseBtn') }}"
+                    onclick="const m = this.closest('.booking-details-modal'); if (m) m.classList.add('hidden');"
                     class="modal-close-trigger p-1.5 rounded-lg text-primary-400 hover:text-primary-800 hover:bg-primary-100/60 transition-colors cursor-pointer"
                     aria-label="Close modal">
                 <x-heroicon-o-x-mark class="w-5 h-5" />
@@ -76,14 +76,11 @@
             </div>
         </div>
 
-        <!-- Modal Footer: Close & Optional Role-Authorized Actions Slot -->
-        <div class="p-4 sm:p-5 border-t border-primary-200/60 bg-primary-50/30 flex items-center justify-end gap-3">
-            <button type="button"
-                    id="{{ $id === 'detailsModal' ? 'dismissDetailsBtn' : ($id === 'staffDetailsModal' ? 'closeStaffDetailsModalFooterBtn' : $prefix . 'DismissBtn') }}"
-                    class="modal-cancel-trigger px-4 py-2 text-xs sm:text-sm font-semibold text-primary-700 bg-white hover:bg-primary-100/80 border border-primary-300 rounded-xl shadow-2xs transition-all cursor-pointer">
-                Close
-            </button>
-            {{ $actions ?? '' }}
-        </div>
+        @if (isset($actions) && trim($actions) !== '')
+            <!-- Modal Footer: Role-Authorized Actions Slot -->
+            <div class="p-4 sm:p-5 border-t border-primary-200/60 bg-primary-50/30 flex items-center justify-end gap-3">
+                {{ $actions }}
+            </div>
+        @endif
     </div>
 </div>

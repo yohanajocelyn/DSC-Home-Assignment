@@ -1,10 +1,11 @@
-@if (!isset($isIncluded))
-<x-layout>
-    <div class="min-h-screen flex flex-col md:flex-row">
-        <!-- Vertical Left Navbar: menus 'My Bookings' and 'Meeting Rooms' -->
-        <x-navbar active="my-bookings" />
+@php
+    $rooms = $meetingRooms ?? \App\Models\MeetingRoom::where('is_active', true)->orderBy('name')->get();
+@endphp
 
-        <!-- Main Content Area: My Bookings -->
+@if (!isset($isIncluded))
+<x-layout title="My Bookings - DSC Meeting Room Reservation">
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <x-navbar />
         <main class="flex-1 p-6 sm:p-8 md:p-10 lg:p-12 overflow-x-hidden">
 @endif
 
@@ -18,11 +19,10 @@
         My Bookings
     </h1>
 
-    <!-- Search Bar Row (Right-Aligned) -->
-    <div class="flex items-center justify-end mb-6">
-        <!-- Search Input with Magnifying Glass -->
-        <div class="relative w-full sm:w-72 md:w-80 flex items-center">
-            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-primary-500 z-10">
+    <!-- Search Bar aligned full-width on mobile, neat on tablet/desktop -->
+    <div class="mb-6 max-w-md">
+        <div class="relative">
+            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
                 <x-heroicon-o-magnifying-glass class="w-4 h-4 text-primary-500" />
             </span>
             <input type="text"
@@ -39,6 +39,7 @@
             <div class="staff-booking-row py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition-colors hover:bg-primary-100/50 rounded-xl px-3 sm:px-4 cursor-pointer"
                  onclick="window.openStaffDetails(this)"
                  data-booking-id="{{ $booking->id }}"
+                 data-room-id="{{ $booking->meeting_room_id }}"
                  data-title="{{ $booking->title }}"
                  data-room-name="{{ $booking->meetingRoom?->name ?? 'Meeting Room' }}"
                  data-room-location="{{ $booking->meetingRoom?->location ?? 'N/A' }}"
@@ -75,7 +76,7 @@
                     </div>
                 </div>
 
-                <!-- Right: Action Buttons (Details, Cancel) -->
+                <!-- Right: Action Buttons (Details, Edit, Cancel) -->
                 <div class="flex items-center justify-end gap-1.5 sm:gap-2 shrink-0">
                     <!-- Details Button -->
                     <button type="button"
@@ -83,6 +84,14 @@
                             class="staff-details-btn inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-primary-900 bg-white hover:bg-primary-100 border border-primary-200 rounded-lg shadow-2xs hover:shadow-xs transition-all duration-200 cursor-pointer">
                         <x-heroicon-o-information-circle class="w-3.5 h-3.5 text-secondary" />
                         <span>Details</span>
+                    </button>
+
+                    <!-- Edit Button -->
+                    <button type="button"
+                            onclick="event.stopPropagation(); window.openStaffEditModal(this.closest('.staff-booking-row'))"
+                            class="staff-edit-btn inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-primary-900 bg-white hover:bg-primary-100 border border-primary-200 rounded-lg shadow-2xs hover:shadow-xs transition-all duration-200 cursor-pointer">
+                        <x-heroicon-o-pencil-square class="w-3.5 h-3.5 text-secondary" />
+                        <span>Edit</span>
                     </button>
 
                     <!-- Cancel Button -->
@@ -122,8 +131,135 @@
     </div>
 </div>
 
-<!-- MODAL: Reusable Booking Details Modal (Read-Only for Staff) -->
-<x-booking-details-modal id="staffDetailsModal" :show-creator="false" />
+<!-- MODAL: Reusable Booking Details Modal (Read-Only for Staff with Edit Action Option) -->
+<x-booking-details-modal id="staffDetailsModal" :show-creator="false">
+    <x-slot:actions>
+        <button type="button"
+                id="switchToStaffEditModalBtn"
+                onclick="window.switchFromDetailsToEdit()"
+                class="inline-flex items-center gap-1.5 px-5 py-2 text-xs sm:text-sm font-bold bg-primary text-white rounded-xl shadow-md hover:bg-secondary hover:shadow-lg transition-all transform hover:-translate-y-0.5 cursor-pointer">
+            <x-heroicon-o-pencil-square class="w-4 h-4" />
+            <span>Edit</span>
+        </button>
+    </x-slot:actions>
+</x-booking-details-modal>
+
+<!-- MODAL: Edit Booking Modal for Staff -->
+<div id="staffEditBookingModal" class="fixed inset-0 z-50 hidden bg-black/45 backdrop-blur-xs flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl border border-primary-200 max-w-lg w-full overflow-hidden transform transition-all duration-200">
+        <!-- Modal Header -->
+        <div class="p-6 pb-4 border-b border-primary-200/60 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-secondary/15 flex items-center justify-center text-secondary">
+                    <x-heroicon-o-pencil-square class="w-5 h-5" />
+                </div>
+                <div>
+                    <h3 class="text-lg font-black text-primary-900 tracking-tight">Edit Booking</h3>
+                    <p class="text-xs text-primary-600 font-medium">Update reservation details</p>
+                </div>
+            </div>
+            <button type="button"
+                    id="closeStaffEditModalBtn"
+                    onclick="window.closeStaffEditModal()"
+                    class="modal-close-trigger p-1.5 rounded-lg text-primary-400 hover:text-primary-800 hover:bg-primary-100/60 transition-colors cursor-pointer"
+                    aria-label="Close modal">
+                <x-heroicon-o-x-mark class="w-5 h-5" />
+            </button>
+        </div>
+
+        <!-- Form: Booking Update -->
+        <form method="POST" action="" id="staffEditBookingForm">
+            @csrf
+            @method('PUT')
+            <div class="p-6 space-y-4">
+                <!-- Meeting Room -->
+                <div>
+                    <x-input-label for="staff_edit_room_id">
+                        <span>Meeting Room</span>
+                        <span class="text-rose-500 ml-0.5">*</span>
+                    </x-input-label>
+                    <select name="meeting_room_id"
+                            id="staff_edit_room_id"
+                            required
+                            class="w-full mt-1.5 px-3.5 py-2.5 rounded-xl border border-primary-300 bg-white text-primary-900 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-secondary cursor-pointer">
+                        @foreach ($rooms as $room)
+                            <option value="{{ $room->id }}">
+                                {{ $room->name }} {{ $room->location ? '('.$room->location.')' : '' }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Title Field -->
+                <div>
+                    <x-input-label for="staff_edit_title">
+                        <span>Title</span>
+                        <span class="text-rose-500 ml-0.5">*</span>
+                    </x-input-label>
+                    <x-input id="staff_edit_title"
+                             type="text"
+                             name="title"
+                             required
+                             class="w-full mt-1.5" />
+                </div>
+
+                <!-- Date Field -->
+                <div>
+                    <x-input-label for="staff_edit_date">
+                        <span>Date</span>
+                        <span class="text-rose-500 ml-0.5">*</span>
+                    </x-input-label>
+                    <x-input id="staff_edit_date"
+                             type="date"
+                             name="date"
+                             required
+                             class="w-full mt-1.5 cursor-pointer" />
+                </div>
+
+                <!-- Start Time & End Time -->
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <x-input-label for="staff_edit_start_time">
+                            <span>Start Time</span>
+                            <span class="text-rose-500 ml-0.5">*</span>
+                        </x-input-label>
+                        <x-input id="staff_edit_start_time"
+                                 type="time"
+                                 name="start_time"
+                                 required
+                                 class="w-full mt-1.5 cursor-pointer" />
+                    </div>
+
+                    <div>
+                        <x-input-label for="staff_edit_end_time">
+                            <span>End Time</span>
+                            <span class="text-rose-500 ml-0.5">*</span>
+                        </x-input-label>
+                        <x-input id="staff_edit_end_time"
+                                 type="time"
+                                 name="end_time"
+                                 required
+                                 class="w-full mt-1.5 cursor-pointer" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer: Cancel and Save changes button on bottom right -->
+            <div class="p-4 sm:p-5 border-t border-primary-200/60 bg-primary-50/30 flex items-center justify-end gap-3">
+                <button type="button"
+                        id="cancelStaffEditModalBtn"
+                        onclick="window.closeStaffEditModal()"
+                        class="px-5 py-2.5 text-xs sm:text-sm font-semibold text-primary-700 bg-white hover:bg-primary-100/80 border border-primary-300 rounded-xl shadow-2xs transition-all cursor-pointer">
+                    Cancel
+                </button>
+                <button type="submit"
+                        class="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-primary text-white text-xs sm:text-sm font-bold rounded-xl shadow-md hover:bg-secondary hover:shadow-lg transition-all transform hover:-translate-y-0.5 cursor-pointer">
+                    <span>Save</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <!-- MODAL: Cancel Confirmation Modal (Reusing generic x-confirm-modal) -->
 <x-confirm-modal
@@ -137,9 +273,13 @@
 />
 
 <script>
+    let currentStaffRow = null;
+
     // Global modal functions
     window.openStaffDetails = function (row) {
         if (!row) return;
+        currentStaffRow = row;
+
         const titleEl = document.getElementById('staffDetailsTitle');
         const roomEl = document.getElementById('staffDetailsRoom');
         const locEl = document.getElementById('staffDetailsLocation');
@@ -172,6 +312,49 @@
     window.closeStaffDetails = function () {
         const modal = document.getElementById('staffDetailsModal');
         if (modal) modal.classList.add('hidden');
+    };
+
+    window.openStaffEditModal = function (row) {
+        if (!row) return;
+        window.closeStaffDetails();
+        currentStaffRow = row;
+
+        const bookingId = row.getAttribute('data-booking-id');
+        const roomId = row.getAttribute('data-room-id');
+        const title = row.getAttribute('data-title');
+        const date = row.getAttribute('data-date');
+        const startTime = row.getAttribute('data-start-time');
+        const endTime = row.getAttribute('data-end-time');
+
+        const form = document.getElementById('staffEditBookingForm');
+        const roomSelect = document.getElementById('staff_edit_room_id');
+        const titleInput = document.getElementById('staff_edit_title');
+        const dateInput = document.getElementById('staff_edit_date');
+        const startInput = document.getElementById('staff_edit_start_time');
+        const endInput = document.getElementById('staff_edit_end_time');
+
+        if (form && bookingId) {
+            form.action = '/staff/my-bookings/' + bookingId;
+        }
+        if (roomSelect && roomId) roomSelect.value = roomId;
+        if (titleInput && title) titleInput.value = title;
+        if (dateInput && date) dateInput.value = date;
+        if (startInput && startTime) startInput.value = startTime;
+        if (endInput && endTime) endInput.value = endTime;
+
+        const editModal = document.getElementById('staffEditBookingModal');
+        if (editModal) editModal.classList.remove('hidden');
+    };
+
+    window.closeStaffEditModal = function () {
+        const editModal = document.getElementById('staffEditBookingModal');
+        if (editModal) editModal.classList.add('hidden');
+    };
+
+    window.switchFromDetailsToEdit = function () {
+        if (currentStaffRow) {
+            window.openStaffEditModal(currentStaffRow);
+        }
     };
 
     window.openStaffCancelModal = function (bookingId, bookingTitle, actionUrl) {
@@ -232,6 +415,14 @@
             }
         }
 
+        // Details modal buttons wiring
+        const detailsModal = document.getElementById('staffDetailsModal');
+        if (detailsModal) {
+            detailsModal.querySelectorAll('.modal-close-trigger, .modal-cancel-trigger').forEach(trigger => {
+                trigger.addEventListener('click', window.closeStaffDetails);
+            });
+        }
+
         // Cancel modal buttons wiring
         const cancelModal = document.getElementById('cancelStaffBookingModal');
         if (cancelModal) {
@@ -240,17 +431,26 @@
             });
         }
 
+        // Edit modal buttons wiring
+        const editModal = document.getElementById('staffEditBookingModal');
+        if (editModal) {
+            editModal.querySelectorAll('.modal-close-trigger, .modal-cancel-trigger').forEach(trigger => {
+                trigger.addEventListener('click', window.closeStaffEditModal);
+            });
+        }
+
         // Backdrop & Keyboard Closing
-        const detailsModal = document.getElementById('staffDetailsModal');
         window.addEventListener('click', function (e) {
             if (e.target === detailsModal) window.closeStaffDetails();
             if (e.target === cancelModal) window.closeStaffCancelModal();
+            if (e.target === editModal) window.closeStaffEditModal();
         });
 
         window.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
                 window.closeStaffDetails();
                 window.closeStaffCancelModal();
+                window.closeStaffEditModal();
             }
         });
     });

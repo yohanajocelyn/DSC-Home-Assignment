@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
             return redirect()->route('staff.my-bookings.index');
         })->name('dashboard');
         Route::get('/my-bookings', [BookingController::class, 'staffIndex'])->name('my-bookings.index');
+        Route::put('/my-bookings/{booking}', [BookingController::class, 'update'])->name('my-bookings.update');
         Route::delete('/my-bookings/{booking}', [BookingController::class, 'destroy'])->name('my-bookings.destroy');
 
         // Meeting Rooms
