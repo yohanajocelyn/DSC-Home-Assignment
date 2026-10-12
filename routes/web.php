@@ -35,9 +35,18 @@ Route::middleware('auth')->group(function () {
     });
 
     // Staff
-    Route::middleware('role:Staff')->group(function () {
+    Route::middleware('role:Staff')->prefix('staff')->name('staff.')->group(function () {
         Route::get('/dashboard', function () {
-            return view('admin.dashboard'); // Temporary until staff dashboard is created
+            return redirect()->route('staff.bookings.index');
+        })->name('dashboard');
+        Route::get('/bookings', [BookingController::class, 'staffIndex'])->name('bookings.index');
+        Route::delete('/bookings/{booking}', [BookingController::class, 'destroy'])->name('bookings.destroy');
+    });
+
+    // Root /dashboard route for staff
+    Route::middleware(['auth', 'role:Staff'])->group(function () {
+        Route::get('/dashboard', function () {
+            return redirect()->route('staff.bookings.index');
         })->name('staff.dashboard');
     });
 });

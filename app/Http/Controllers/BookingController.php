@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class BookingController extends Controller
@@ -133,6 +134,8 @@ class BookingController extends Controller
      */
     public function update(Request $request, Booking $booking): RedirectResponse
     {
+        Gate::authorize('update', $booking);
+
         $validated = $request->validate([
             'meeting_room_id' => ['required', 'exists:meeting_rooms,id'],
             'title' => ['required', 'string', 'max:255'],
@@ -173,8 +176,41 @@ class BookingController extends Controller
     /**
      * Remove the specified booking from storage.
      */
+    /**
+     * Display a listing of bookings belonging to the authenticated staff member.
+     */
+    public function staffIndex(Request $request): View
+    {
+        $staffId = Auth::id();
+
+        $query = Booking::with(['meetingRoom'])
+            ->where('user_id', $staffId)
+            ->orderBy('date', 'asc')
+            ->orderBy('start_time', 'asc');
+
+        if ($request->filled('search')) {
+            $search = $request->query('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                    ->orWhereHas('meetingRoom', function ($roomQ) use ($search) {
+                        $roomQ->where('name', 'like', "%{$search}%")
+                            ->orWhere('location', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $bookings = $query->get();
+
+        return view('staff.bookings.index', compact('bookings'));
+    }
+
+    /**
+     * Remove the specified booking from storage.
+     */
     public function destroy(Booking $booking): RedirectResponse
     {
+        Gate::authorize('delete', $booking);
+
         $booking->delete();
 
         return back()->with('success', 'Booking cancelled successfully!');

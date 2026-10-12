@@ -31,14 +31,14 @@
         } else {
             $menus = [
                 [
-                    'key' => 'meeting-rooms',
-                    'label' => 'Meeting Rooms',
-                    'url' => \Route::has('meeting-rooms.index') ? route('meeting-rooms.index') : url('/meeting-rooms'),
+                    'key' => 'my-bookings',
+                    'label' => 'My Bookings',
+                    'url' => \Route::has('staff.bookings.index') ? route('staff.bookings.index') : (\Route::has('staff.dashboard') ? route('staff.dashboard') : url('/staff/bookings')),
                 ],
                 [
-                    'key' => 'bookings',
-                    'label' => 'Bookings',
-                    'url' => \Route::has('bookings.index') ? route('bookings.index') : url('/bookings'),
+                    'key' => 'meeting-rooms',
+                    'label' => 'Meeting Rooms',
+                    'url' => \Route::has('staff.meeting-rooms.index') ? route('staff.meeting-rooms.index') : url('/staff/meeting-rooms'),
                 ],
             ];
         }
@@ -51,7 +51,10 @@
         <nav class="space-y-4 md:space-y-6">
             @foreach ($menus as $menu)
                 @php
-                    $isActive = ($active === $menu['key'] || strtolower($active) === strtolower($menu['label']));
+                    $isActive = ($active === $menu['key'] 
+                                || strtolower($active) === strtolower($menu['label'])
+                                || ($menu['key'] === 'my-bookings' && in_array(strtolower($active), ['my-bookings', 'bookings', 'my bookings', 'dashboard']))
+                                || ($menu['key'] === 'meeting-rooms' && in_array(strtolower($active), ['meeting-rooms', 'meeting rooms'])));
                 @endphp
                 <div>
                     <a href="{{ $menu['url'] }}"

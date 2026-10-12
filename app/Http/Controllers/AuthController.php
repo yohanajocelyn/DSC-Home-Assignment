@@ -68,6 +68,14 @@ class AuthController extends Controller
             return redirect()->intended(route('admin.dashboard'));
         }
 
+        if ($user && $user->isStaff()) {
+            return redirect()->intended(route('staff.bookings.index'));
+        }
+
+        if (\Route::has('staff.bookings.index')) {
+            return redirect()->intended(route('staff.bookings.index'));
+        }
+
         if (\Route::has('staff.dashboard')) {
             return redirect()->intended(route('staff.dashboard'));
         }
