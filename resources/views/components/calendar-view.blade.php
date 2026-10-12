@@ -113,7 +113,7 @@
                             @endphp
 
                             <!-- Blocked Section with Title on Top-Left -->
-                            <div class="booking-block absolute left-1 right-1 rounded-lg bg-primary-100/90 border-l-4 border-secondary text-primary-950 p-1 px-1.5 shadow-xs hover:shadow-md hover:bg-primary-200/90 hover:scale-[1.01] transition-all duration-150 cursor-pointer overflow-hidden z-10"
+                            <div class="booking-block absolute left-1 right-1 rounded-lg bg-primary-100/90 border-l-4 border-secondary text-primary-950 p-1 px-1.5 shadow-xs hover:shadow-md hover:bg-primary-200/90 transition-all duration-150 cursor-pointer overflow-hidden z-10"
                                  style="top: {{ $topPx }}px; height: {{ $heightPx }}px;"
                                  data-booking-id="{{ $booking->id }}"
                                  data-title="{{ $booking->title }}"
