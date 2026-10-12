@@ -5,7 +5,7 @@
 
         <!-- Main Content Area: Automatically Open Menu is My Bookings -->
         <main class="flex-1 p-6 sm:p-8 md:p-10 lg:p-12 overflow-x-hidden">
-            @include('staff.bookings.index', ['isIncluded' => true])
+            @include('staff.my-bookings.index', ['isIncluded' => true])
         </main>
     </div>
 </x-layout>

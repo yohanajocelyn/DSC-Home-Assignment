@@ -115,7 +115,7 @@
                             title="Cancel this booking"
                             data-booking-id="{{ $booking->id }}"
                             data-booking-title="{{ $booking->title }}"
-                            data-action="{{ route('staff.bookings.destroy', $booking->id) }}">
+                            data-action="{{ route('staff.my-bookings.destroy', $booking->id) }}">
                         <x-heroicon-o-x-circle class="w-3.5 h-3.5 text-rose-600" />
                         <span>Cancel</span>
                     </button>

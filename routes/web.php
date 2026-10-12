@@ -37,16 +37,21 @@ Route::middleware('auth')->group(function () {
     // Staff
     Route::middleware('role:Staff')->prefix('staff')->name('staff.')->group(function () {
         Route::get('/dashboard', function () {
-            return redirect()->route('staff.bookings.index');
+            return redirect()->route('staff.my-bookings.index');
         })->name('dashboard');
-        Route::get('/bookings', [BookingController::class, 'staffIndex'])->name('bookings.index');
-        Route::delete('/bookings/{booking}', [BookingController::class, 'destroy'])->name('bookings.destroy');
+        Route::get('/my-bookings', [BookingController::class, 'staffIndex'])->name('my-bookings.index');
+        Route::delete('/my-bookings/{booking}', [BookingController::class, 'destroy'])->name('my-bookings.destroy');
+
+        // Meeting Rooms
+        Route::get('/meeting-rooms', [MeetingRoomController::class, 'staffIndex'])->name('meeting-rooms.index');
+        Route::get('/meeting-rooms/{meetingRoom}', [MeetingRoomController::class, 'staffShow'])->name('meeting-rooms.show');
+        Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
     });
 
     // Root /dashboard route for staff
     Route::middleware(['auth', 'role:Staff'])->group(function () {
         Route::get('/dashboard', function () {
-            return redirect()->route('staff.bookings.index');
+            return redirect()->route('staff.my-bookings.index');
         })->name('staff.dashboard');
     });
 });

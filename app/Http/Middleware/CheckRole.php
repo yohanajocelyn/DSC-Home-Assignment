@@ -27,7 +27,7 @@ class CheckRole
 
         // If staff tries to access an unauthorized route (e.g. /admin/dashboard), redirect to their own bookings
         if ($request->user()->isStaff()) {
-            return redirect()->route('staff.bookings.index');
+            return redirect()->route('staff.my-bookings.index');
         }
 
         // If admin tries to access a role-restricted route, redirect to admin dashboard

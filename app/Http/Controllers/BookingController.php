@@ -123,10 +123,17 @@ class BookingController extends Controller
             'end_time' => $validated['end_time'],
         ]);
 
-        return redirect()->route('admin.bookings.index', [
-            'room_id' => $validated['meeting_room_id'],
+        if (Auth::user()?->isAdmin()) {
+            return redirect()->route('admin.bookings.index', [
+                'room_id' => $validated['meeting_room_id'],
+                'date' => $validated['date'],
+            ])->with('success', 'Room booked successfully!');
+        }
+
+        return redirect()->route('staff.meeting-rooms.show', [
+            'meetingRoom' => $validated['meeting_room_id'],
             'date' => $validated['date'],
-        ])->with('success', 'Room booked successfully!');
+        ])->with('success', 'Meeting room reserved successfully!');
     }
 
     /**
@@ -201,7 +208,7 @@ class BookingController extends Controller
 
         $bookings = $query->get();
 
-        return view('staff.bookings.index', compact('bookings'));
+        return view('staff.my-bookings.index', compact('bookings'));
     }
 
     /**

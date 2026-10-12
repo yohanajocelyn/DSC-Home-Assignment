@@ -33,7 +33,7 @@
                 [
                     'key' => 'my-bookings',
                     'label' => 'My Bookings',
-                    'url' => \Route::has('staff.bookings.index') ? route('staff.bookings.index') : (\Route::has('staff.dashboard') ? route('staff.dashboard') : url('/staff/bookings')),
+                    'url' => \Route::has('staff.my-bookings.index') ? route('staff.my-bookings.index') : (\Route::has('staff.dashboard') ? route('staff.dashboard') : url('/staff/bookings')),
                 ],
                 [
                     'key' => 'meeting-rooms',
