@@ -64,7 +64,7 @@
 <form id="meetingRoomForm"
       method="POST"
       action="{{ $formAction }}"
-      class="space-y-6 bg-white/70 backdrop-blur-xs p-6 sm:p-8 rounded-3xl border border-primary-200/80 shadow-xs">
+      class="space-y-6 p-6 sm:p-8">
     @csrf
     @if (strtoupper($formMethod) !== 'POST')
         @method($formMethod)

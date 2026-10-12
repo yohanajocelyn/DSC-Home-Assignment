@@ -11,31 +11,32 @@ class UserPolicy
         if ($user->isAdmin()) {
             return true;
         }
+
         return null;
     }
 
     public function viewAny(User $user): bool
     {
-        return false;
+        return $user->isAdmin();
     }
 
     public function view(User $user, User $model): bool
     {
-        return $user->isStaff() && $user->id === $model->id;
+        return $user->isAdmin();
     }
 
     public function create(User $user): bool
     {
-        return false;
+        return $user->isAdmin();
     }
 
     public function update(User $user, User $model): bool
     {
-        return false;
+        return $user->isAdmin();
     }
 
     public function delete(User $user, User $model): bool
     {
-        return false;
+        return $user->isAdmin();
     }
 }

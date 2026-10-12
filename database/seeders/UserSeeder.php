@@ -17,20 +17,16 @@ class UserSeeder extends Seeder
         $adminRole = DB::table('roles')->where('name', 'Admin')->first();
         $staffRole = DB::table('roles')->where('name', 'Staff')->first();
 
-        User::updateOrCreate([
-            'email' => 'admin@email.com'
-        ], [
-            'name' => 'Admin',
-            'password' => Hash::make('password'),
-            'role_id' => $adminRole ? $adminRole->id : null,
-        ]);
+        $adminEmail = config('app.admin.email');
+        $adminName = config('app.admin.name');
+        $adminPassword = config('app.admin.password');
 
         User::updateOrCreate([
-            'email' => 'staff@email.com'
+            'email' => $adminEmail,
         ], [
-            'name' => 'Staff',
-            'password' => Hash::make('password'),
-            'role_id' => $staffRole ? $staffRole->id : null,
+            'name' => $adminName,
+            'password' => Hash::make($adminPassword),
+            'role_id' => $adminRole ? $adminRole->id : null,
         ]);
     }
 }
