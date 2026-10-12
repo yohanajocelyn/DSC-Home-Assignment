@@ -41,8 +41,11 @@
             <select id="bookingFilterUser"
                     class="w-full pl-3 pr-7 py-2.5 rounded-xl border border-primary-300/80 bg-white/80 text-primary-900 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-secondary shadow-2xs cursor-pointer appearance-none transition-all duration-200">
                 <option value="">All Creators</option>
+                <option value="{{ auth()->id() }}">My Bookings</option>
                 @foreach ($creators as $creator)
-                    <option value="{{ $creator->id }}">{{ $creator->name }}</option>
+                    @if ($creator->id !== auth()->id())
+                        <option value="{{ $creator->id }}">{{ $creator->name }}</option>
+                    @endif
                 @endforeach
             </select>
             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-primary-500">

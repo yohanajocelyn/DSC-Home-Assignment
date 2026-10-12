@@ -69,13 +69,19 @@
                     </div>
                 </div>
 
-                <!-- Action Button to Edit Each Room -->
-                <div class="flex items-center justify-end shrink-0">
-                    <a href="{{ \Route::has('admin.meeting-rooms.edit') ? route('admin.meeting-rooms.edit', $room->id) : '#' }}"
+                <!-- Action Buttons: Edit and Delete -->
+                <div class="flex items-center justify-end gap-2 shrink-0">
+                    <a href="{{ route('admin.meeting-rooms.edit', $room->id) }}"
                        class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-primary-900 bg-white hover:bg-primary-100 border border-primary-200 rounded-lg shadow-2xs hover:shadow-xs transition-all duration-200">
                         <x-heroicon-o-pencil-square class="w-3.5 h-3.5 text-secondary" />
                         <span>Edit</span>
                     </a>
+                    <button type="button"
+                            onclick="window.openDeleteRoomModal('{{ $room->id }}', '{{ addslashes($room->name) }}')"
+                            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-rose-700 bg-white hover:bg-rose-50 border border-rose-200 rounded-lg shadow-2xs hover:shadow-xs transition-all duration-200 cursor-pointer">
+                        <x-heroicon-o-trash class="w-3.5 h-3.5 text-rose-600" />
+                        <span>Delete</span>
+                    </button>
                 </div>
             </div>
         @empty
@@ -125,4 +131,30 @@
             });
         }
     });
+
+    window.openDeleteRoomModal = function (roomId, roomName) {
+        const modal = document.getElementById('deleteRoomConfirmModal');
+        const form = document.getElementById('deleteRoomConfirmModal_form');
+        const message = document.getElementById('deleteRoomConfirmModal_message');
+        if (form && roomId) {
+            form.action = '/admin/meeting-rooms/' + roomId;
+        }
+        if (message && roomName) {
+            message.textContent = `Are you sure you want to delete "${roomName}"? It will be removed and no new bookings can be made for it.`;
+        }
+        if (modal) {
+            modal.classList.remove('hidden');
+        }
+    };
 </script>
+
+<x-confirm-modal
+    id="deleteRoomConfirmModal"
+    title="Delete Meeting Room"
+    message="Are you sure you want to delete this meeting room? It will be removed and no new bookings can be made for it."
+    confirm-text="Delete Room"
+    cancel-text="Cancel"
+    variant="danger"
+    method="DELETE"
+    action=""
+/>

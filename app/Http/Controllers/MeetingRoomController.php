@@ -7,6 +7,7 @@ use App\Models\MeetingRoom;
 use Carbon\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\View\View;
 
 class MeetingRoomController extends Controller
@@ -16,6 +17,8 @@ class MeetingRoomController extends Controller
      */
     public function index(): View
     {
+        Gate::authorize('viewAny', MeetingRoom::class);
+
         $meetingRooms = MeetingRoom::latest()->get();
 
         return view('admin.dashboard', compact('meetingRooms'));
@@ -26,6 +29,8 @@ class MeetingRoomController extends Controller
      */
     public function create(): View
     {
+        Gate::authorize('create', MeetingRoom::class);
+
         return view('admin.meeting-rooms.create');
     }
 
@@ -34,6 +39,8 @@ class MeetingRoomController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        Gate::authorize('create', MeetingRoom::class);
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'location' => ['required', 'string', 'max:255'],
@@ -54,6 +61,8 @@ class MeetingRoomController extends Controller
      */
     public function edit(MeetingRoom $meetingRoom): View
     {
+        Gate::authorize('update', $meetingRoom);
+
         return view('admin.meeting-rooms.edit', compact('meetingRoom'));
     }
 
@@ -62,6 +71,8 @@ class MeetingRoomController extends Controller
      */
     public function update(Request $request, MeetingRoom $meetingRoom): RedirectResponse
     {
+        Gate::authorize('update', $meetingRoom);
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'location' => ['required', 'string', 'max:255'],
@@ -77,10 +88,26 @@ class MeetingRoomController extends Controller
             ->with('success', 'Meeting room updated successfully!');
     }
     /**
+     * Remove the specified meeting room from storage (soft delete).
+     */
+    public function destroy(MeetingRoom $meetingRoom): RedirectResponse
+    {
+        Gate::authorize('delete', $meetingRoom);
+
+        $meetingRoom->delete();
+
+        return redirect()
+            ->route('admin.meeting-rooms.index')
+            ->with('success', 'Meeting room deleted successfully!');
+    }
+
+    /**
      * Display a listing of active meeting rooms for staff.
      */
     public function staffIndex(Request $request): View
     {
+        Gate::authorize('viewAny', MeetingRoom::class);
+
         $meetingRooms = MeetingRoom::where('is_active', true)
             ->orderBy('name')
             ->get();
@@ -93,6 +120,8 @@ class MeetingRoomController extends Controller
      */
     public function staffShow(Request $request, MeetingRoom $meetingRoom): View|RedirectResponse
     {
+        Gate::authorize('view', $meetingRoom);
+
         if (! $meetingRoom->is_active) {
             return redirect()
                 ->route('staff.meeting-rooms.index')

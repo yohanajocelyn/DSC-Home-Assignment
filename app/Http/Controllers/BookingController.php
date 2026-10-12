@@ -9,6 +9,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class BookingController extends Controller
@@ -84,13 +85,22 @@ class BookingController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        Gate::authorize('create', Booking::class);
+
         $validated = $request->validate([
-            'meeting_room_id' => ['required', 'exists:meeting_rooms,id'],
+            'meeting_room_id' => ['required', Rule::exists('meeting_rooms', 'id')->withoutTrashed()],
             'title' => ['required', 'string', 'max:255'],
-            'date' => ['required', 'date'],
+            'date' => ['required', 'date', 'after_or_equal:today'],
             'start_time' => ['required', 'date_format:H:i'],
             'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
         ]);
+
+        $bookingDateTime = Carbon::createFromFormat('Y-m-d H:i', $validated['date'] . ' ' . $validated['start_time']);
+        if ($bookingDateTime->isPast()) {
+            return back()
+                ->withErrors(['start_time' => 'Cannot book a date or time that has already passed.'])
+                ->withInput();
+        }
 
         $room = MeetingRoom::find($validated['meeting_room_id']);
         if (! $room || ! $room->is_active) {
@@ -115,7 +125,7 @@ class BookingController extends Controller
         }
 
         Booking::create([
-            'user_id' => Auth::id() ?? 1,
+            'user_id' => Auth::id(),
             'meeting_room_id' => $validated['meeting_room_id'],
             'title' => $validated['title'],
             'date' => $validated['date'],
@@ -144,12 +154,19 @@ class BookingController extends Controller
         Gate::authorize('update', $booking);
 
         $validated = $request->validate([
-            'meeting_room_id' => ['required', 'exists:meeting_rooms,id'],
+            'meeting_room_id' => ['required', Rule::exists('meeting_rooms', 'id')->withoutTrashed()],
             'title' => ['required', 'string', 'max:255'],
-            'date' => ['required', 'date'],
+            'date' => ['required', 'date', 'after_or_equal:today'],
             'start_time' => ['required', 'date_format:H:i'],
             'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
         ]);
+
+        $bookingDateTime = Carbon::createFromFormat('Y-m-d H:i', $validated['date'] . ' ' . $validated['start_time']);
+        if ($bookingDateTime->isPast()) {
+            return back()
+                ->withErrors(['start_time' => 'Cannot book a date or time that has already passed.'])
+                ->withInput();
+        }
 
         $room = MeetingRoom::find($validated['meeting_room_id']);
         if (! $room || ! $room->is_active) {

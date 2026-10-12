@@ -27,6 +27,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/meeting-rooms', [MeetingRoomController::class, 'store'])->name('meeting-rooms.store');
         Route::get('/meeting-rooms/{meetingRoom}/edit', [MeetingRoomController::class, 'edit'])->name('meeting-rooms.edit');
         Route::put('/meeting-rooms/{meetingRoom}', [MeetingRoomController::class, 'update'])->name('meeting-rooms.update');
+        Route::delete('/meeting-rooms/{meetingRoom}', [MeetingRoomController::class, 'destroy'])->name('meeting-rooms.destroy');
 
         // Bookings Management
         Route::get('/bookings', [BookingController::class, 'index'])->name('bookings.index');
