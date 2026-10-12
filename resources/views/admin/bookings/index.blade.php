@@ -139,13 +139,16 @@
             const bookingSearchInput = document.getElementById('bookingSearchInput');
             const bookingFilterRoom = document.getElementById('bookingFilterRoom');
             const bookingFilterUser = document.getElementById('bookingFilterUser');
+            const bookingFilterTiming = document.getElementById('bookingFilterTiming');
             const listRows = document.querySelectorAll('.booking-list-row');
             const noBookingsFilterResults = document.getElementById('noBookingsFilterResults');
+            const todayStr = '{{ now()->format("Y-m-d") }}';
 
             function filterListBookings() {
                 const query = bookingSearchInput ? bookingSearchInput.value.trim().toLowerCase() : '';
                 const selectedRoom = bookingFilterRoom ? bookingFilterRoom.value : '';
                 const selectedUser = bookingFilterUser ? bookingFilterUser.value : '';
+                const selectedTiming = bookingFilterTiming ? bookingFilterTiming.value : '';
 
                 let visibleCount = 0;
 
@@ -153,12 +156,20 @@
                     const searchContent = row.dataset.search || '';
                     const rowRoomId = row.dataset.roomId || '';
                     const rowUserId = row.dataset.userId || '';
+                    const rowDate = row.dataset.date || '';
 
                     const matchesQuery = !query || searchContent.includes(query);
                     const matchesRoom = !selectedRoom || rowRoomId === selectedRoom;
                     const matchesUser = !selectedUser || rowUserId === selectedUser;
 
-                    if (matchesQuery && matchesRoom && matchesUser) {
+                    let matchesTiming = true;
+                    if (selectedTiming === 'upcoming') {
+                        matchesTiming = rowDate >= todayStr;
+                    } else if (selectedTiming === 'past') {
+                        matchesTiming = rowDate < todayStr;
+                    }
+
+                    if (matchesQuery && matchesRoom && matchesUser && matchesTiming) {
                         row.classList.remove('hidden');
                         visibleCount++;
                     } else {
@@ -183,6 +194,9 @@
             }
             if (bookingFilterUser) {
                 bookingFilterUser.addEventListener('change', filterListBookings);
+            }
+            if (bookingFilterTiming) {
+                bookingFilterTiming.addEventListener('change', filterListBookings);
             }
 
             // ==========================================

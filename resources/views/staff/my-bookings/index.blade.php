@@ -19,8 +19,36 @@
         My Bookings
     </h1>
 
-    <!-- Search Bar: Below heading, right-aligned -->
-    <div class="flex justify-end mb-6">
+    @php
+        $todayIso = now()->format('Y-m-d');
+        $upcomingCount = $bookings->filter(fn($b) => (is_string($b->date) ? $b->date : $b->date->format('Y-m-d')) >= $todayIso)->count();
+        $pastCount = $bookings->filter(fn($b) => (is_string($b->date) ? $b->date : $b->date->format('Y-m-d')) < $todayIso)->count();
+    @endphp
+
+    <!-- Controls Row: Timing Tabs on Left, Search Bar on Right -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+        <!-- Tabs: Upcoming & Present vs Past -->
+        <div class="inline-flex items-center p-1 bg-primary-100/70 border border-primary-200/80 rounded-2xl shadow-2xs shrink-0 self-start sm:self-auto" role="tablist" aria-label="Bookings timing tabs">
+            <button type="button"
+                    id="tabUpcomingBtn"
+                    class="staff-timing-tab inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold rounded-xl transition-all duration-150 cursor-pointer bg-white text-secondary shadow-2xs border border-primary-200/60"
+                    data-timing="upcoming"
+                    role="tab"
+                    aria-selected="true">
+                <span>Upcoming & Present</span>
+            </button>
+
+            <button type="button"
+                    id="tabPastBtn"
+                    class="staff-timing-tab inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold rounded-xl transition-all duration-150 cursor-pointer text-primary-600 hover:text-primary-900 hover:bg-white/50 border border-transparent"
+                    data-timing="past"
+                    role="tab"
+                    aria-selected="false">
+                <span>Past</span>
+            </button>
+        </div>
+
+        <!-- Search Bar: Right-aligned -->
         <div class="relative w-full sm:w-72 md:w-80">
             <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-primary-500 z-10">
                 <x-heroicon-o-magnifying-glass class="w-4 h-4 text-primary-500" />
@@ -52,7 +80,6 @@
 
                 <!-- Left: Dot Indicator + Title & Location -->
                 <div class="flex items-center gap-3 min-w-0 sm:w-1/3">
-                    <span class="w-2.5 h-2.5 rounded-full bg-secondary shrink-0 shadow-2xs" title="Active Booking"></span>
                     <div class="min-w-0">
                         <span class="text-base font-bold text-primary-900 truncate block" title="{{ $booking->title }}">
                             {{ $booking->title }}
@@ -119,6 +146,15 @@
                 </p>
             </div>
         @endforelse
+    </div>
+
+    <!-- Empty Tab State Indicator (e.g. No past bookings) -->
+    <div id="noTabBookingsNotice" class="hidden py-16 px-4 text-center">
+        <div class="w-16 h-16 mx-auto mb-3 rounded-2xl bg-primary-100/70 border border-primary-200/60 flex items-center justify-center text-primary-400 shadow-2xs">
+            <x-heroicon-o-calendar-days class="w-8 h-8 text-secondary" />
+        </div>
+        <p class="font-bold text-base text-primary-900 mb-1" id="noTabBookingsTitle">No bookings found</p>
+        <p class="text-sm text-primary-600" id="noTabBookingsSubtitle">You have no reservations in this category.</p>
     </div>
 
     <!-- No Filter Results Indicator -->
@@ -383,37 +419,91 @@
     };
 
     document.addEventListener('DOMContentLoaded', function () {
-        // 1. Instant Client-Side Search
+        // 1. Instant Client-Side Search & Tab Switching
         const searchInput = document.getElementById('staffBookingSearch');
         const bookingRows = document.querySelectorAll('.staff-booking-row');
         const noResults = document.getElementById('noStaffBookingsFilterResults');
+        const noTabNotice = document.getElementById('noTabBookingsNotice');
+        const noTabTitle = document.getElementById('noTabBookingsTitle');
+        const noTabSubtitle = document.getElementById('noTabBookingsSubtitle');
+        const tabBtns = document.querySelectorAll('.staff-timing-tab');
+        const todayStr = '{{ now()->format("Y-m-d") }}';
+
+        let activeTimingTab = 'upcoming';
 
         function filterRows() {
-            if (!searchInput) return;
-            const query = searchInput.value.toLowerCase().trim();
+            const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+            let tabTotalCount = 0;
             let matchCount = 0;
 
             bookingRows.forEach(row => {
                 const searchData = row.getAttribute('data-search') || '';
-                if (!query || searchData.includes(query)) {
-                    row.style.display = '';
-                    matchCount++;
+                const rowDate = row.getAttribute('data-date') || '';
+
+                const isUpcoming = rowDate >= todayStr;
+                const matchesTiming = (activeTimingTab === 'upcoming' && isUpcoming) ||
+                                      (activeTimingTab === 'past' && !isUpcoming);
+
+                if (matchesTiming) {
+                    tabTotalCount++;
+                    if (!query || searchData.includes(query)) {
+                        row.style.display = '';
+                        matchCount++;
+                    } else {
+                        row.style.display = 'none';
+                    }
                 } else {
                     row.style.display = 'none';
                 }
             });
 
+            if (noTabNotice) {
+                if (tabTotalCount === 0 && bookingRows.length > 0) {
+                    if (noTabTitle) {
+                        noTabTitle.textContent = activeTimingTab === 'upcoming' 
+                            ? 'No Upcoming Reservations' 
+                            : 'No Past Reservations';
+                    }
+                    if (noTabSubtitle) {
+                        noTabSubtitle.textContent = activeTimingTab === 'upcoming'
+                            ? 'You do not have any upcoming room reservations.'
+                            : 'You do not have any past room reservations.';
+                    }
+                    noTabNotice.classList.remove('hidden');
+                } else {
+                    noTabNotice.classList.add('hidden');
+                }
+            }
+
             if (noResults) {
-                noResults.classList.toggle('hidden', matchCount > 0 || bookingRows.length === 0);
+                noResults.classList.toggle('hidden', matchCount > 0 || tabTotalCount === 0);
             }
         }
 
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', function () {
+                activeTimingTab = this.dataset.timing;
+
+                tabBtns.forEach(b => {
+                    const isSelected = b === this;
+                    b.setAttribute('aria-selected', isSelected ? 'true' : 'false');
+                    if (isSelected) {
+                        b.className = 'staff-timing-tab inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold rounded-xl transition-all duration-150 cursor-pointer bg-white text-secondary shadow-2xs border border-primary-200/60';
+                    } else {
+                        b.className = 'staff-timing-tab inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-bold rounded-xl transition-all duration-150 cursor-pointer text-primary-600 hover:text-primary-900 hover:bg-white/50 border border-transparent';
+                    }
+                });
+
+                filterRows();
+            });
+        });
+
         if (searchInput) {
             searchInput.addEventListener('input', filterRows);
-            if (searchInput.value.trim() !== '') {
-                filterRows();
-            }
         }
+
+        // Initialize view with 'upcoming' filter active
+        filterRows();
 
         // Details modal buttons wiring
         const detailsModal = document.getElementById('staffDetailsModal');

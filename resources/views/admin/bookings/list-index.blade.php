@@ -49,6 +49,19 @@
                 <x-heroicon-o-chevron-down class="w-4 h-4" />
             </div>
         </div>
+
+        <!-- Filter by Timing: Upcoming/Present vs Past -->
+        <div class="relative w-full sm:w-44">
+            <select id="bookingFilterTiming"
+                    class="w-full pl-3 pr-7 py-2.5 rounded-xl border border-primary-300/80 bg-white/80 text-primary-900 text-xs sm:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-secondary shadow-2xs cursor-pointer appearance-none transition-all duration-200">
+                <option value="">All Bookings</option>
+                <option value="upcoming">Upcoming & Present</option>
+                <option value="past">Past Bookings</option>
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-primary-500">
+                <x-heroicon-o-chevron-down class="w-4 h-4" />
+            </div>
+        </div>
     </div>
 </div>
 
