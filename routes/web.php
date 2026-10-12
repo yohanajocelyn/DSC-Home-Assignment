@@ -57,12 +57,13 @@ Route::middleware('auth')->group(function () {
         Route::post('/bookings', [BookingController::class, 'store'])->name('bookings.store');
     });
 
-    // Root /dashboard route for staff
-    Route::middleware(['auth', 'role:Staff'])->group(function () {
-        Route::get('/dashboard', function () {
-            return redirect()->route('staff.my-bookings.index');
-        })->name('staff.dashboard');
-    });
+    Route::get('/dashboard', function () {
+        if (Auth::user()?->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        return redirect()->route('staff.my-bookings.index');
+    })->name('dashboard');
 });
 
 // Fallback Route
