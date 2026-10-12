@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Booking;
 use App\Policies\BookingPolicy;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
