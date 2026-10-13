@@ -147,12 +147,12 @@ The application follows Laravel's standard MVC architecture, separated by role a
 
 ## Test Accounts
 1. Admin Account: 
-Email: admin@example.com
-Password: AdminAccount@567
+   - Email: admin@example.com
+   - Password: AdminAccount@567
 
 2. Staff Account
-Email: staff@example.com
-Password: StaffAccount@567
+   - Email: staff@example.com
+   - Password: StaffAccount@567
 
 ## Deployment
 Deployed using Railway with public URL: https://dsc-home-assignment-production.up.railway.app/
