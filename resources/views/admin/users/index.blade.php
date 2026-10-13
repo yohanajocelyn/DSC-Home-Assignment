@@ -55,12 +55,20 @@
                                     </span>
                                 </div>
 
-                                <div class="flex items-center justify-end shrink-0">
+                                <div class="flex items-center justify-end gap-2 shrink-0">
                                     <a href="{{ route('admin.users.edit', $user) }}"
                                        class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-primary-900 bg-white hover:bg-primary-100 border border-primary-200 rounded-lg shadow-2xs hover:shadow-xs transition-all duration-200">
                                         <x-heroicon-o-pencil-square class="w-3.5 h-3.5 text-secondary" />
                                         <span>Edit</span>
                                     </a>
+                                    @can('delete', $user)
+                                        <button type="button"
+                                                onclick="window.openDeleteUserModal('{{ $user->id }}', '{{ addslashes($user->name) }}')"
+                                                class="inline-flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-bold text-rose-700 bg-white hover:bg-rose-50 border border-rose-200 rounded-lg shadow-2xs hover:shadow-xs transition-all duration-200 cursor-pointer">
+                                            <x-heroicon-o-trash class="w-3.5 h-3.5 text-rose-600" />
+                                            <span>Delete</span>
+                                        </button>
+                                    @endcan
                                 </div>
                             </div>
                         </div>
@@ -110,5 +118,31 @@
                 });
             }
         });
+
+        window.openDeleteUserModal = function (userId, userName) {
+            const modal = document.getElementById('deleteUserConfirmModal');
+            const form = document.getElementById('deleteUserConfirmModal_form');
+            const message = document.getElementById('deleteUserConfirmModal_message');
+            if (form && userId) {
+                form.action = '/admin/users/' + userId;
+            }
+            if (message && userName) {
+                message.textContent = `Are you sure you want to delete user "${userName}"? This will deactivate their account and they will no longer be able to log in.`;
+            }
+            if (modal) {
+                modal.classList.remove('hidden');
+            }
+        };
     </script>
+
+    <x-confirm-modal
+        id="deleteUserConfirmModal"
+        title="Delete User"
+        message="Are you sure you want to delete this user? This will deactivate their account and they will no longer be able to log in."
+        confirm-text="Delete User"
+        cancel-text="Cancel"
+        variant="danger"
+        method="DELETE"
+        action=""
+    />
 </x-layout>

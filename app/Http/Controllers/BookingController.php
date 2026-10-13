@@ -91,8 +91,13 @@ class BookingController extends Controller
             'meeting_room_id' => ['required', Rule::exists('meeting_rooms', 'id')->withoutTrashed()],
             'title' => ['required', 'string', 'max:255'],
             'date' => ['required', 'date', 'after_or_equal:today'],
-            'start_time' => ['required', 'date_format:H:i'],
-            'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
+            'start_time' => ['required', 'date_format:H:i', 'after_or_equal:08:00', 'before:22:00'],
+            'end_time' => ['required', 'date_format:H:i', 'after:start_time', 'before_or_equal:22:00'],
+        ], [
+            'start_time.after_or_equal' => 'Bookings cannot be scheduled before 8:00 AM.',
+            'start_time.before' => 'Bookings must start before 10:00 PM.',
+            'end_time.before_or_equal' => 'Bookings cannot end after 10:00 PM.',
+            'end_time.after' => 'The end time must be after the start time.',
         ]);
 
         $bookingDateTime = Carbon::createFromFormat('Y-m-d H:i', $validated['date'] . ' ' . $validated['start_time']);
@@ -157,8 +162,13 @@ class BookingController extends Controller
             'meeting_room_id' => ['required', Rule::exists('meeting_rooms', 'id')->withoutTrashed()],
             'title' => ['required', 'string', 'max:255'],
             'date' => ['required', 'date', 'after_or_equal:today'],
-            'start_time' => ['required', 'date_format:H:i'],
-            'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
+            'start_time' => ['required', 'date_format:H:i', 'after_or_equal:08:00', 'before:22:00'],
+            'end_time' => ['required', 'date_format:H:i', 'after:start_time', 'before_or_equal:22:00'],
+        ], [
+            'start_time.after_or_equal' => 'Bookings cannot be scheduled before 8:00 AM.',
+            'start_time.before' => 'Bookings must start before 10:00 PM.',
+            'end_time.before_or_equal' => 'Bookings cannot end after 10:00 PM.',
+            'end_time.after' => 'The end time must be after the start time.',
         ]);
 
         $bookingDateTime = Carbon::createFromFormat('Y-m-d H:i', $validated['date'] . ' ' . $validated['start_time']);

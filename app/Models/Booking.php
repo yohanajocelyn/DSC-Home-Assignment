@@ -41,7 +41,7 @@ class Booking extends Model
      */
     public function user(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class)->withTrashed();
     }
 
     /**
@@ -49,6 +49,6 @@ class Booking extends Model
      */
     public function meetingRoom(): BelongsTo
     {
-        return $this->belongsTo(MeetingRoom::class);
+        return $this->belongsTo(MeetingRoom::class)->withTrashed();
     }
 }

@@ -224,9 +224,12 @@
                                                name="start_time"
                                                id="form_start_time"
                                                value="{{ old('start_time', '09:00') }}"
+                                               min="08:00"
+                                               max="21:59"
                                                required
                                                class="w-full px-4 py-2.5 rounded-xl border border-primary-300/80 bg-white text-sm font-semibold text-primary-900 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary shadow-2xs cursor-pointer" />
                                     </div>
+                                    <x-input-error :messages="$errors->get('start_time')" class="mt-1" />
                                 </div>
 
                                 <!-- End Time Input -->
@@ -239,9 +242,12 @@
                                                name="end_time"
                                                id="form_end_time"
                                                value="{{ old('end_time', '10:00') }}"
+                                               min="08:01"
+                                               max="22:00"
                                                required
                                                class="w-full px-4 py-2.5 rounded-xl border border-primary-300/80 bg-white text-sm font-semibold text-primary-900 focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary shadow-2xs cursor-pointer" />
                                     </div>
+                                    <x-input-error :messages="$errors->get('end_time')" class="mt-1" />
                                 </div>
                             </div>
                         </div>

@@ -262,8 +262,11 @@
                         <x-input id="staff_edit_start_time"
                                  type="time"
                                  name="start_time"
+                                 min="08:00"
+                                 max="21:59"
                                  required
                                  class="w-full mt-1.5 cursor-pointer" />
+                        <x-input-error :messages="($errors ?? null)?->get('start_time')" class="mt-1" />
                     </div>
 
                     <div>
@@ -274,8 +277,11 @@
                         <x-input id="staff_edit_end_time"
                                  type="time"
                                  name="end_time"
+                                 min="08:01"
+                                 max="22:00"
                                  required
                                  class="w-full mt-1.5 cursor-pointer" />
+                        <x-input-error :messages="($errors ?? null)?->get('end_time')" class="mt-1" />
                     </div>
                 </div>
             </div>
